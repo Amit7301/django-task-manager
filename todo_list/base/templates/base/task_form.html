@@ -1,0 +1,30 @@
+{% extends 'base/main.html' %}
+{% block content %}
+<div class="task-form-container">
+    <div class="task-form-header">
+        <h1>{% if task.id %}Edit Task{% else %}Create New Task{% endif %}</h1>
+    </div>
+
+    <form method="POST" class="task-form">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-group">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+            <div class="form-error">{{ field.errors|striptags }}</div>
+            {% endif %}
+        </div>
+        {% endfor %}
+        
+        <div class="form-actions">
+            <a href="{% url 'tasks' %}" class="btn btn-cancel">Cancel</a>
+            <button type="submit" class="btn auth-btn">
+                {% if task.id %}Save Changes{% else %}Create Task{% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock content %}
+
+

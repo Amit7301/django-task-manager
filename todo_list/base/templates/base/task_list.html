@@ -1,0 +1,56 @@
+{% extends "base/main.html" %}
+{% block content %}
+    <div class="header-section">
+        {% if request.user.is_authenticated %}
+        <h1 class="welcome-text">Hello, <span>{{user_name|title}}</span></h1>
+        <p class="task-count">
+            You have <span class="count">{{count}}</span> incomplete task{{count|pluralize:"s"}}
+        </p>
+        {% endif %}
+    </div>
+
+    <div class="search-section">
+        <form method="GET" class="search-form">
+            <input type='text' name='search-area' placeholder="Search your task" value="{{search_input}}" class="form-input">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+        
+        <a href="{% url 'task-create' %}" class="btn btn-primary">Create Task</a>
+    </div>
+
+    <div class="tasks-container">
+        {% for task in tasks %}
+        <div class="task-item {% if task.completed %}completed{% endif %}" data-position="{{task.pk}}">
+            <div class="task-content">
+                <span class="status-dot {% if task.completed %}complete{% else %}incomplete{% endif %}"></span>
+                {% if task.completed %}
+                <span class="completed-task">{{task}}</span>
+                {% else %}
+                <a href="{% url 'task' task.id %}" class="task-link">{{task}}</a>
+                {% endif %}
+            </div>
+            <div class="task-controls">
+                <form method="POST" action="{% url 'task-toggle' task.id %}" class="toggle-form">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-toggle {% if task.completed %}btn-complete{% endif %}">
+                        {% if task.completed %}
+                        Mark Incomplete
+                        {% else %}
+                        Mark Complete
+                        {% endif %}
+                    </button>
+                </form>
+                <a href="{% url 'task-update' task.id %}" class="btn">Edit</a>
+                <a href="{% url 'task-delete' task.id %}" class="btn btn-danger">Delete</a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-state">
+            <h3>No tasks yet</h3>
+            <p>Create your first task to get started!</p>
+            <a href="{% url 'task-create' %}" class="btn btn-primary">Create Task</a>
+        </div>
+        {% endfor %}
+    </div>
+{% endblock content %}
+
